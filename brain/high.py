@@ -16,7 +16,7 @@ class HighLevelController:
     def execute_action(self, action_name, **kwargs):
         """Loads and starts an action with optional parameters."""
         try:
-            module = importlib.import_module(f"actions.{action_name.lower()}")
+            module = importlib.import_module(f"skills.{action_name.lower()}")
             action_class = getattr(module, action_name.capitalize() + "Action")
 
             # Pass kwargs to the action constructor

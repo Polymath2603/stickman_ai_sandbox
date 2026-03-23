@@ -4,41 +4,43 @@ import math
 class LowLevelController:
     """
     brain/low.py
-    Low-level control over the body. Applies movements as torques in joints.
-    Valid joint names line up with body.py (e.g. 'l_hip', 'r_knee', 'neck').
+    Low-level control over the body. Applies movements as relative angular velocities in joints.
+    Utilizes Pymunk's SimpleMotor for active control.
     """
     def __init__(self, stickman):
         self.stickman = stickman
 
-    def set_target_angle(self, joint_name, target_angle, max_torque=1000.0, kp=15.0, max_speed=5.0):
+    def set_target_angle(self, joint_name, target_angle, max_torque=10000.0, kp=10.0, max_speed=10.0):
         """
-        Uses Box2D's native motor to reach a target angle.
-        motorSpeed acts as the corrective velocity, maxMotorTorque limits the strength.
-        max_speed prevents explosive joint realignments when returning from extreme poses.
+        Uses Pymunk's SimpleMotor to reach a target angle via PD control.
         """
-        if joint_name not in self.stickman.joints:
+        if joint_name not in self.stickman.motors:
             return
 
-        joint = self.stickman.joints[joint_name]
-        current_angle = joint.angle
+        motor = self.stickman.motors[joint_name]
+        body_a = motor.a
+        body_b = motor.b
         
-        # Speed should be proportional to error, not a raw torque value
+        # Current relative angle
+        current_angle = body_b.angle - body_a.angle
+        
+        # PD Control for motor rate (angular velocity)
         error = target_angle - current_angle
-        desired_speed = kp * error
+        desired_rate = kp * error
         
-        # Cap the speed so it doesn't violently kick the ground
-        desired_speed = max(-max_speed, min(max_speed, desired_speed))
+        # Cap the rate
+        desired_rate = max(-max_speed, min(max_speed, desired_rate))
         
-        joint.maxMotorTorque = max_torque
-        joint.motorSpeed = desired_speed
+        motor.max_force = max_torque
+        motor.rate = desired_rate
         
     def relax(self, joint_name):
         """Releases a joint so it falls loosely to gravity."""
-        if joint_name in self.stickman.joints:
-            joint = self.stickman.joints[joint_name]
-            joint.maxMotorTorque = 0.0
-            joint.motorSpeed = 0.0
+        if joint_name in self.stickman.motors:
+            motor = self.stickman.motors[joint_name]
+            motor.max_force = 0.0
+            motor.rate = 0.0
 
     def relax_all(self):
-        for name in self.stickman.joints:
+        for name in self.stickman.motors:
             self.relax(name)

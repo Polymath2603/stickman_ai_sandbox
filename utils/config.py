@@ -13,25 +13,26 @@ TIME_STEP = DT
 VEL_ITERS = 40
 POS_ITERS = 20
 
-GRAVITY = (0.0, -10.0) # Real world gravity (y is up in box2d)
+GRAVITY = (0.0, -9.81) # Standard Earth gravity
 
-# Stickman Geometry (meters)
+# Stickman Geometry (meters) - Scaled for ~75kg total
 HEAD_RADIUS = 0.4
-HEAD_MASS = 1.0
+HEAD_MASS = 6.0
 
 TORSO_WIDTH = 0.4
 TORSO_HEIGHT = 1.2
-TORSO_MASS = 8.0
+TORSO_MASS = 37.0
 
 ARM_UPPER_LENGTH = 0.8
 ARM_LOWER_LENGTH = 0.7
-ARM_UPPER_MASS = 2.0
-ARM_LOWER_MASS = 1.0
+ARM_UPPER_MASS = 2.1
+ARM_LOWER_MASS = 1.6
 
 LEG_UPPER_LENGTH = 1.0
 LEG_LOWER_LENGTH = 1.0
-LEG_UPPER_MASS = 4.0
-LEG_LOWER_MASS = 2.0
+LEG_UPPER_MASS = 7.5
+LEG_LOWER_MASS = 3.3
+FOOT_MASS = 1.1
 
 # Joint Limits (in radians)
 NECK_LIMITS = (-0.5, 0.5) 
